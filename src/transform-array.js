@@ -15,42 +15,41 @@ const {
  * transform([1, 2, 3, '--discard-prev', 4, 5]) => [1, 2, 4, 5]
  *
  */
-function transform(arr) {
-  if (!Array.isArray(arr)) {
-    throw new Error("'arr' parameter must be an instance of the Array!");
-  }
-  let array = arr.slice();
-  for (let i = 0; i < array.length; i++) {
-    if (array[i] == '--double-next') {
-      if(i === array.length - 1){
-        array.pop();
-      } else{
-        array[i] = array[i + 1];
+ function transform(arr) {
+  if (!Array.isArray(arr)) throw Error(`'arr' parameter must be an instance of the Array!`);
+
+  let res = [];
+  let counter = 0;
+
+  for (let i = 0; i < arr.length; i++) {
+    if (arr[i] == "--discard-next") {
+      i = i + 2;
+
+    } else if (arr[i] == "--discard-prev") {
+      if (counter != 0) {
+        res.pop();
+        counter--;
       }
 
-    } else if (array[i] == '--discard-prev') {
-      if (i === 0) {
-        array.splice(array[i - 1], 1);
-      } else {
-         array.splice(array[i - 2], 2);
-      }
-    } else if (array[i] == '--discard-next') {
-      if(i === array.length - 1){
-        array.pop();
-      } else{
-        array.splice(array[i - 1], 2);
+    } else if (arr[i] == "--double-next") {
+      if (i != arr.length - 1) {
+        res.push(arr[i + 1]);
+        counter++;
       }
 
-    } else if (array[i] == '--double-prev') {
-      if(i === 0){
-        array.shift();
-      } else{
-        array[i] = array[i - 1];
+    } else if (arr[i] == "--double-prev") {
+      if (i != 0 && arr[i - 2] != "--discard-next") {
+        res.push(arr[i - 1]);
+        counter++;
       }
 
+    } else {
+      res.push(arr[i]);
+      counter++;
     }
   }
-  return array;
+
+  return res;
 }
 
 module.exports = {
